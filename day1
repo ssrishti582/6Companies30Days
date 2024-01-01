@@ -1,0 +1,90 @@
+//Question 1
+#define ll long long
+class Solution {
+    ll getGCD(int a,int b){
+        if(b==0)return a;
+
+        return getGCD(b,a%b);
+    }
+public:
+    int minimizeSet(int div1, int div2, int cnt1, int cnt2) {
+        ll ans=INT_MAX;
+        ll low=1,high=INT_MAX;
+        
+        // Iterate with binary search to get Solution.
+        while(low<=high){
+            ll mid=(low+high)/2;
+            // Remaining Numbers Divisible by div1 from total mid numbers
+            ll total1=mid-mid/div1;
+            // Remaining Numbers Divisible by div2 from total mid numbers
+            ll total2=mid-mid/div2;
+
+            // GCD of both div1 and div2
+            ll gcd=getGCD(div1,div2);
+            // Get the LCM of 2 numbers
+            ll lcm=(ll)(((ll)div1)*((ll)div2))/gcd;
+
+            // Remaining numbers that are not divisible by div1 and div2 from total mid numbers.
+            ll temp=mid-mid/lcm;
+
+            // If we have all satisfied then 
+            // set the high value to left of mid and store the mid val as ans.
+            if(total1>=cnt1 and total2>=cnt2 and temp>=cnt1+cnt2){
+                high=mid-1;
+                ans=min(ans,mid);
+            }
+            else{
+                low=mid+1;
+            }
+        }
+        return ans;
+    }
+
+};
+
+//question 2
+
+class Solution {
+public:
+    vector<string> findHighAccessEmployees(vector<vector<string>>& access_times) {
+        unordered_map<string, vector<int>> mp;
+        for (auto& it : access_times) {
+            int time = stoi(it[1]);
+            mp[it[0]].push_back(time);
+        }
+        for (auto& it : mp) {
+            sort(it.second.begin(), it.second.end());
+        }
+        vector<string> ans;
+        for (auto& it : mp) {
+            vector<int>& times = it.second;
+            for (int i = 2; i < times.size(); i++) {
+                if (times[i] - times[i - 2] < 100) {
+                    ans.push_back(it.first);
+                    break;
+                }
+            }
+        }
+        return ans;
+
+    }
+};
+
+//Question 3
+
+class Solution {
+public:
+    vector<int> smallestTrimmedNumbers(vector<string>& nums, vector<vector<int>>& queries) {
+        vector<int> res;
+        int n = nums.size();
+        for(auto &q:queries) {
+            vector<pair<string,int>> pq;
+            for(int i=0;i<n; i++) {
+                pq.push_back({(nums[i].substr(nums[i].size()-q[1])), i});
+            }
+            sort(pq.begin(), pq.end());
+            res.push_back(pq[q[0]-1].second);
+        }
+        return res;
+    }
+};
