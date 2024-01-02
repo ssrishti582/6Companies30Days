@@ -1,0 +1,141 @@
+//Question 4
+//brute force but didn't work if someone can correct me ...it will be helpful to find my error
+class Solution {
+public:
+    vector<vector<int>> combinationSum3(int k, int n) {
+        vector<int> arr{1,2,3,4,5,6,7,8,9};
+        vector<vector<int>> output;
+        vector<int>ans;
+        // 1 2 3 4 5 6 7 8 9
+        // i j k
+        int i=0;
+        int j=1;
+        int l=2;
+        int a=arr.size();
+        while(i < a || j < a || l < a ){
+            if(arr[i]+ arr[j] + arr[l] == n){
+            ans.push_back(arr[i]);
+            ans.push_back(arr[j]);
+            ans.push_back(arr[l]);
+            output.push_back(ans);
+            ans.pop_back();
+            ans.pop_back();
+            ans.pop_back();
+        }
+        else{
+            if(arr[i]+ arr[j] + arr[l] > n){
+                j++;
+                l=j+1;
+                if(arr[i]+ arr[j] + arr[l] > n){
+                    i++;
+                    j=i+1;
+                    l=j+1;
+                }
+            }
+            else{
+                // < n
+                l++;
+            }
+
+        }
+        }
+        
+    return output;
+    }
+};
+//same questio -Approach 2
+class Solution {
+public:
+    vector<vector<int>> combinationSum3(int k, int n) {
+        vector<vector<int>> result;
+        vector<int> combination;
+        combinationSum(n, k, 1, combination, result);
+        return result;
+    }
+private:
+    void combinationSum(int target, int k, int start, vector<int>& combination, vector<vector<int>>& result) {
+        if (target == 0 && combination.size() == k) {
+            result.push_back(combination);
+            return;
+        }
+        if (target < 0 || combination.size() == k) {
+            return;
+        }
+        for (int i = start; i <= 9; i++) {
+            combination.push_back(i);
+            combinationSum(target - i, k, i + 1, combination, result);
+            combination.pop_back();
+        }
+    }
+};
+
+//question 5
+class Solution {
+public:
+   set<pair<int,int>> s;
+    int r , c; 
+    Solution(int m, int n) 
+    {
+        
+        r = m ; 
+        c = n ; 
+    }
+    
+    vector<int> flip() 
+    {
+        int x = rand()%r; 
+        int y = rand()%c; 
+        if(s.find({x,y})==s.end())
+        {    s.insert({x,y});
+            return {x,y};
+        }
+        else return flip();
+    }
+    
+    void reset() 
+    {
+         s.clear(); 
+    }
+};
+//Question 6
+class Solution {
+public:
+    void solve(vector<string> &ans,int index,vector<string>& mapping,string digits,string output){
+        if(index >= digits.length()){
+            ans.push_back(output);
+            return;
+        }
+
+        int digit=digits[index] - '0';
+        string value=mapping[digit];
+        for(int i=0;i<value.length();i++){
+            char ch=value[i];
+            //store
+            output.push_back(ch);
+            //rec call
+            solve(ans,index + 1,mapping,digits,output);
+            //backtrack
+            output.pop_back();
+        }
+    }
+    vector<string> letterCombinations(string digits) {
+        vector<string> ans;
+        if(digits.length()==0){
+            return ans;
+        }
+        string output="";
+        int index=0;
+        vector<string> mapping(10);
+        mapping[2]="abc";
+        mapping[3]="def";
+        mapping[4]="ghi";
+        mapping[5]="jkl";
+        mapping[6]="mno";
+        mapping[7]="pqrs";
+        mapping[8]="tuv";
+        mapping[9]="wxyz";
+
+        solve(ans,index,mapping ,digits,output);
+        return ans;
+    }
+};
