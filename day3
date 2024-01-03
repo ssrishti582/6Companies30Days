@@ -1,0 +1,69 @@
+//question 7
+
+vector<int> findTwoElement(vector<int> arr, int n) {
+    vector<int> result(2);  // Initialize result vector
+
+    unordered_set<int> visited;  // Track visited elements
+
+    int duplicate = -1, missing = -1;  // Initialize variables for duplicate and missing numbers
+
+    // Find duplicate
+    for (int i = 0; i < n; ++i) {
+        if (visited.find(arr[i]) != visited.end())  // Found duplicate
+            duplicate = arr[i];
+        visited.insert(arr[i]);
+    }
+
+    // Find missing number
+    for (int i = 1; i <= n; ++i) {
+        if (visited.find(i) == visited.end()) {  // Found missing number
+            missing = i;
+            break;
+        }
+    }
+
+    result[0] = duplicate;  // Store duplicate number in result vector
+    result[1] = missing;   // Store missing number in result vector
+
+    return result;  // Return result vector containing the duplicate and missing numbers
+}
+
+//question 8
+class DataStream {
+public:
+typedef long long ll;
+public:
+    ll val, k, pre, ts;
+    DataStream(int value, int K) {
+        val=value, k=K;
+        pre=-1, ts=0;
+    }
+    
+    bool consec(int num) {
+        if(num!=val){
+            pre=ts;
+        }
+        bool ans=ts-pre>=k;
+        ++ts;
+        return ans;
+    }
+};
+
+//question 9
+static String printMinNumberForPattern(String S){
+        // code here
+        int n=S.length();
+        int cnt=1;
+        char[] ans=new char[n+1];
+        for(int i=0;i<=n;i++){
+            if(i==n || S.charAt(i)=='I'){
+                for(int j=i-1;j>=-1;j--){
+                    ans[j+1]=(char)('0'+cnt);
+                    cnt++;
+                    if(j>=0 && S.charAt(j)=='I')
+                    break;
+                }
+            }
+        }
+        return new String(ans);
+    }
