@@ -1,0 +1,137 @@
+//10 question
+class Solution {
+public:
+
+    int countDistinct(vector<int>& nums, int k, int p) {
+        
+        int n=nums.size();
+        set<vector<int>>ans;
+        
+        int i,j;
+        for(i=0;i<n;i++)
+        {
+            vector<int>tt;
+            int ct=0;
+            for(j=i;j<n;j++)
+            {
+                tt.push_back(nums[j]);
+                if(nums[j]%p==0)
+                    ++ct;
+                if(ct>k)
+                    break;
+                ans.insert(tt);
+                    
+            }
+        }
+        return ans.size();
+    }
+    
+};
+//11 question
+
+class Solution {
+public:
+    vector<vector<int>> highestPeak(vector<vector<int>>& water)
+    {
+        int n = water.size(),m=water[0].size();
+        vector<vector<int>> ans(n,vector<int>(m,-1));
+        queue<pair<int,int>> q;
+        
+        //Step 1 : identify where water is present and marks as a zero in new vector push indices in queue to move in four direction
+        
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(water[i][j] == 1)
+                {
+                    ans[i][j] = 0;
+                    q.push({i,j});
+                }
+            }
+        }
+        
+        while(!q.empty())
+        {
+            auto it = q.front();
+            q.pop();
+            int x = it.first,y=it.second;
+            int v = ans[x][y];
+            
+            // traversing up down right left in ans array to find where is -1
+            vector<int> temp = {-1,0,1,0,-1};
+            for(int i=0; i<temp.size()-1;i++)
+            {
+                if(x+temp[i]>=0 && x+temp[i]<n && y+temp[i+1]<m &&y+temp[i+1]>=0)
+                {
+                    if(ans[x+temp[i]][y+temp[i+1]] == -1)
+                    {
+                        ans[x+temp[i]][y+temp[i+1]] = v+1;
+                        q.push({x+temp[i],y+temp[i+1]});
+                    }
+                        
+                }
+            }
+        }
+        
+        return ans;
+    }
+};
+//12 question
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+int ans;
+class prop{
+public:
+    bool bst;       //to check if tree is bst
+    int ma;         //max value in a tree
+    int mi;         //min value in an tree
+    int ms;         //current maximum sum
+    prop(){
+        bst=true;
+        ma=INT_MIN;
+        mi=INT_MAX;
+        ms=0;
+    }
+};
+class Solution {
+public:
+    prop calcSum(TreeNode* root){
+        if (root == NULL){
+            return prop();
+        }
+        prop p;
+        prop pl = calcSum(root->left);                        //recursive call for left sub-tree
+        prop pr = calcSum(root->right);                       //recursive call for right sub-tree
+		
+		//if sub-tree including this node is bst
+        if ( pl.bst==true && pr.bst==true && root->val>pl.ma && root->val<pr.mi ){
+            p.bst = true;                                                      //current tree is a bst
+            p.ms = pl.ms + pr.ms + root->val;          
+            p.mi  = min(root->val, pl.mi);
+            p.ma = max(root->val, pr.ma);
+        }
+		//if current tree is not a bst
+        else {
+            p.bst=false;
+            p.ms=max(pl.ms, pr.ms);
+        }
+		
+        ans=max(ans, p.ms);
+        return p;
+    }
+    int maxSumBST(TreeNode* root){
+        ans = 0;
+        calcSum(root);
+        return ans;
+    }
+};
