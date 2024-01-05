@@ -1,0 +1,74 @@
+//question 13
+class Solution {
+    int mod = 1e9 + 7;
+public:
+    int peopleAwareOfSecret(int n, int delay, int forget) {
+        vector<long long> dp(n+1,0);
+        long long numOfPeopleSharingSecret = 0;
+        dp[1] = 1;
+
+        for(int i = 2; i <= n; i++){
+            long long numOfNewPeopleSharingSecret = dp[max(0,i-delay)];
+            long long numOfPeopleForgettingSecret = dp[max(0,i-forget)];
+
+            numOfPeopleSharingSecret = (numOfPeopleSharingSecret + numOfNewPeopleSharingSecret - numOfPeopleForgettingSecret+mod)%mod;
+            dp[i] = numOfPeopleSharingSecret%mod;
+
+        }   
+
+        long long ans = 0;   
+        for(int i = n - forget + 1; i <= n; i++){
+            ans = (ans + dp[i])%mod;
+        }
+        return ans%mod;
+    }
+};
+//question 14
+string encode(string src)
+{     
+    //Initializing an empty string to store the encoded string
+    string dest = "";
+
+    //Iterating over each character in the source string
+    for(int i = 0; i < src.size(); i++){
+        //Appending the current character to the destination string
+        dest += src[i];
+
+        //Initializing and updating a counter
+        int cnt = 1;
+        
+        //Checking if there are consecutive characters equal to the current character
+        while(i+1 < src.size() and src[i] == src[i+1]){
+            //Incrementing the counter
+            cnt++;
+            //Moving to the next character in the source string
+            i++;
+        }
+
+        //Appending the count of consecutive characters to the destination string
+        dest+=to_string(cnt);
+    }
+
+    //Returning the encoded string
+    return dest;
+}
+//question 15
+class Solution {
+    int mod = 1e9 + 7;
+    long long solve(int curr, int endPos, int k, vector<vector<int>>& dp){
+        if(k == 0){
+            return curr==endPos;
+        }
+        if(dp[999+curr][k] != -1){
+            return dp[999+curr][k];
+        }
+        long long forw = solve(curr+1,endPos,k-1,dp);
+        long long back = solve(curr-1,endPos,k-1,dp);
+        return dp[999+curr][k] = (forw+back)%mod;
+    }
+public:
+    int numberOfWays(int startPos, int endPos, int k) {
+        vector<vector<int>> dp(3000,vector<int>(k+1,-1));
+        return solve(startPos,endPos,k,dp)%mod;
+    }
+};
