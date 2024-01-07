@@ -1,0 +1,81 @@
+//question 19
+class Solution {
+public:
+    vector<vector<int>> imageSmoother(vector<vector<int>>& inputImage) {
+        // Save the dimensions of the image.
+        int rows = inputImage.size();
+        int cols = inputImage[0].size();
+
+        // Create a new image of the same dimension as the input image.
+        vector<vector<int>> smoothImage(rows, vector<int>(cols));
+
+        // Iterate over the cells of the image.
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                // Initialize the sum and count 
+                int sum = 0;
+                int count = 0;
+
+                // Iterate over all plausible nine indices.
+                for (int x = i - 1; x <= i + 1; x++) {
+                    for (int y = j - 1; y <= j + 1; y++) {
+                        // If the indices form valid neighbor
+                        if (0 <= x && x < rows && 0 <= y && y < cols) {
+                            sum += inputImage[x][y];
+                            count += 1;
+                        }
+                    }
+                }
+
+                // Store the rounded down value in smoothImage[i][j].
+                smoothImage[i][j] = sum / count;
+            }
+        }
+
+        // Return the smooth image.
+        return smoothImage;
+    }
+};
+//question 20
+class Solution {
+public:
+    int minMoves2(vector<int>& nums) {
+        int n = nums.size(), steps = 0;
+        sort(nums.begin(), nums.end());
+        for(int i=0; i<n/2; i++){
+            steps += nums[n-1-i] - nums[i]; //Adding difference
+        }
+        return steps;
+    }
+};
+//question 21
+class Solution {
+public:
+    vector<int> v;
+    vector<vector<int>> rects;
+    
+    int area(vector<int>& r) {
+        return (r[2] - r[0] + 1) * (r[3] - r[1] + 1);
+    }
+    
+    Solution(vector<vector<int>> _) {
+        rects = _;
+        for (auto& r : rects) {
+            v.push_back(area(r) + (v.empty() ? 0 : v.back()));
+        }
+    }
+    
+    vector<int> pick() {
+        // https://leetcode.com/problems/random-pick-with-weight/description/
+        int rnd = rand() % v.back();
+        auto it = upper_bound(v.begin(), v.end(), rnd);
+        int idx = it - v.begin();
+        
+        // pick a random point in rect[idx]
+        auto r = rects[idx];
+        return {
+            rand() % (r[2] - r[0] + 1) + r[0],
+            rand() % (r[3] - r[1] + 1) + r[1]
+        };
+    }
+};
