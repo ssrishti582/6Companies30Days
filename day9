@@ -1,0 +1,90 @@
+//question 25
+class Solution {
+public:
+    int result = 0;
+    bool isPalin(string& s){
+        int i = 0;
+        int j = s.length() - 1;
+ 
+        while (i < j) {
+            if (s[i] != s[j]) return false;
+            i++;
+            j--;
+        }
+ 
+        return true;
+    }
+    
+    void dfs(string& s, int i, string& s1, string& s2){
+        
+        if(i >= s.length()){
+            if(isPalin(s1) && isPalin(s2))
+                result = max(result, (int)s1.length()*(int)s2.length());
+            return;
+        }
+        
+        s1.push_back(s[i]);
+        dfs(s, i+1, s1, s2);
+        s1.pop_back();
+        
+        s2.push_back(s[i]);
+        dfs(s, i+1, s1, s2);
+        s2.pop_back();
+        
+        dfs(s, i+1, s1, s2);
+    }
+    
+    int maxProduct(string s) {
+        string s1 = "", s2 = "";
+        dfs(s, 0, s1, s2);
+        
+        return result;
+    }
+};
+//question 26
+class Solution {
+public:
+    int incremovableSubarrayCount(vector<int>& nums) {
+    int ans = 0;
+    for(int i = 0; i < nums.size(); ++i){
+        for(int j = i; j < nums.size(); ++j){
+            int last = -1, flag = 1;
+            for(int k = 0; k < nums.size(); ++k){
+                if(k >= i && k <= j) continue;
+                if(last >= nums[k]){ flag = 0; break; }
+                last = nums[k];
+            }
+            if(flag) ans++;
+        }
+    }
+    return ans;
+}
+};
+//question 27
+class Solution {
+public:
+    
+        int findTheCity(int n, vector<vector<int>>& edges, int distanceThreshold) {
+        vector<vector<int>> dis(n, vector(n, 10001));
+        int res = 0, smallest = n;
+        for (auto& e : edges)
+            dis[e[0]][e[1]] = dis[e[1]][e[0]] = e[2];
+        for (int i = 0; i < n; ++i)
+            dis[i][i] = 0;
+        for (int k = 0; k < n; ++k)
+            for (int i = 0; i < n; ++i)
+                for (int j = 0; j < n; ++j)
+                    dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j]);
+        for (int i = 0; i < n; i++) {
+            int count = 0;
+            for (int j = 0; j < n; ++j)
+                if (dis[i][j] <= distanceThreshold)
+                    ++count;
+            if (count <= smallest) {
+                res = i;
+                smallest = count;
+            }
+        }
+        return res;
+    }
+};
