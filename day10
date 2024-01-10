@@ -1,0 +1,107 @@
+//question 28
+class Solution {
+public:
+    void wiggleSort(vector<int>& nums) {
+        vector<int> sorted(nums);
+    sort(sorted.begin(), sorted.end());
+    for (int i=nums.size()-1, j=0, k=i/2+1; i>=0; i--)
+        nums[i] = sorted[i&1 ? k++ : j++];
+    }
+};
+//quesiton 29
+class Solution {
+private:
+    int ex(int ind, vector<int> ds, vector<int> &price, vector<vector<int>> &offer, vector<int> &need,  map<int,map<vector<int>,int>> &dp){
+        if(ind==offer.size()){
+            int tot=0;
+            for(int i=0; i<need.size(); i++){
+                tot+=(need[i]-ds[i])*price[i];
+            }
+            return tot;
+        }
+        
+        if(dp.find(ind)!=dp.end() && dp[ind].find(ds)!=dp[ind].end()){
+            return dp[ind][ds];
+        }
+
+        int offer_notTake=ex(ind+1,ds,price,offer,need,dp);
+
+        int offer_take=1e9;
+        vector<int> copyDS=ds;
+
+        for(int i=0; i<need.size(); i++){
+            if(copyDS[i]+offer[ind][i]<=need[i]){
+                copyDS[i]+=offer[ind][i];
+            }else{
+                return dp[ind][ds]=min(offer_notTake,offer_take);
+            }
+        }
+        offer_take=offer[ind][price.size()]+ex(ind,copyDS,price,offer,need,dp);
+
+        return dp[ind][ds]=min(offer_notTake,offer_take); 
+    }
+
+public:
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& offer, vector<int>& need) {
+        map<int,map<vector<int>,int>> dp;
+        vector<int> ds(need.size(),0);
+        return ex(0,ds,price,offer,need,dp);
+    }
+};
+//question 30
+class Solution {
+public:
+    void bfs(unordered_map<char,vector<pair<char,int>>>&graph,char source,vector<vector<int>>&distances){
+//Normal BFS shortest path code
+//Saving calculated distance in distances array
+
+        queue<pair<int,int>>q;
+        q.push({source,0});
+        while(!q.empty()){
+            int node = q.front().first;
+            int distance=q.front().second;
+            q.pop();
+            for(auto child:graph[node]){
+                if(distances[source-'a'][child.first-'a']>distance+child.second){
+
+                    distances[source-'a'][child.first-'a']=distance+child.second;
+                    q.push({child.first,distance+child.second});
+                }
+            }
+            
+        }
+        return;
+    }
+    
+    long long minimumCost(string source, string target, vector<char>& original, vector<char>& changed, vector<int>& cost) {
+
+        unordered_map<char,vector<pair<char,int>>>graph;
+
+//Initialzing the graph in the node schema : {parent,{child,cost}}
+        for(int i=0;i<original.size();i++){
+            graph[original[i]].push_back({changed[i],cost[i]});
+        }
+
+        //Distance array required will only need 26*26 space.
+        vector<vector<int>>distances(26,vector<int>(26,INT_MAX));
+
+        //Running BFS from every node of original string.
+        for(auto it:original)
+        bfs(graph,it,distances);
+        
+        long long ans=0;
+        for(int i=0;i<source.size();i++){
+
+//No need to add anything to answer if source and target are same
+            if(source[i]==target[i])continue;
+
+//If Distance is infinite, the target is not achievable and hence return -1
+            if(distances[source[i]-'a'][target[i]-'a']==INT_MAX)return -1;
+
+//Otherwise add the corresponding value in the distances array
+            else ans+=distances[source[i]-'a'][target[i]-'a'];
+        }
+        
+        return ans;
+    }
+};
