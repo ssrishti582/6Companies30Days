@@ -1,0 +1,136 @@
+//question 31
+class Solution {
+public:
+    vector<int> ans;
+    void helper(int i,vector<int>& nums,vector<int>& vec,vector<int>& dp){
+        if(i==nums.size()){
+            if(vec.size()>ans.size())
+                ans=vec;
+            return;
+        }
+        if(vec.size()==0){
+            vec.push_back(nums[i]);
+            helper(i+1,nums,vec,dp);
+            vec.pop_back();
+        }
+        else if((int)vec.size()>dp[i] && nums[i]%vec.back()==0){
+            dp[i]=vec.size();
+            vec.push_back(nums[i]);
+            helper(i+1,nums,vec,dp);
+            vec.pop_back();
+        }
+        helper(i+1,nums,vec,dp);
+    }
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        vector<int> vec;
+        vector<int> dp(nums.size()+1,-1);
+        sort(nums.begin(),nums.end());
+        helper(0,nums,vec,dp);
+        return ans;
+    }
+};
+//question 32
+// Declare variables
+        int n = nums.size(), i = 0, t = k;
+		// Answer Array
+        vector<int> ans;
+		
+		// Put first k elements
+        while(t>0){
+            ans.push_back(nums[i]);
+            i++;
+            t--;
+        }
+		
+		//Loop Through Remaining Array
+        for(int j=i;j<n;j++)
+        {
+			// Calcualate minimum from ans array 
+            int mini = min_element(ans.begin(), ans.end()) - ans.begin();
+			// Comapre it with the current element
+            if(ans[mini] < nums[j]){
+                ans.erase(ans.begin()+mini);
+                ans.push_back(nums[j]);
+            }
+            
+        }
+        return ans;
+//question 33
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+private:
+    void doMapping(unordered_map<TreeNode*,TreeNode*> &nodeToParent, TreeNode* node,
+        TreeNode* parent, int start, TreeNode* &target){
+            // base case
+            if(node == NULL){
+                return;
+            }
+
+            if(node->val == start){
+                target = node;
+            }
+            nodeToParent[node] = parent;
+            doMapping(nodeToParent, node->left, node, start,target);
+            doMapping(nodeToParent, node->right, node, start,target);
+        }
+
+    void infection(TreeNode* target, unordered_map<TreeNode*,TreeNode*> &nodeToParent, int &min){
+        unordered_map<TreeNode*,bool> visited;
+        queue<TreeNode*> q;
+
+        q.push(target);
+        visited[target] = true;
+
+        while(!q.empty()){
+            int n = q.size();
+            bool flag = false;
+
+            for(int i=0;i<n;i++){
+                TreeNode* temp = q.front();
+                q.pop();
+
+                if(temp->left && !visited[temp->left]){
+                    flag = true;
+                    q.push(temp->left);
+                    visited[temp->left] = true;
+                }
+                if(temp->right && !visited[temp->right]){
+                    flag = true;
+                    q.push(temp->right);
+                    visited[temp->right] = true;
+                }
+                if(nodeToParent[temp] && !visited[nodeToParent[temp]]){
+                    flag = true;
+                    q.push(nodeToParent[temp]);
+                    visited[nodeToParent[temp]] = true;
+                }
+            }
+            if(flag){
+                min++;
+            }
+        }
+    }
+
+public:
+    int amountOfTime(TreeNode* root, int start) {
+        unordered_map<TreeNode*,TreeNode*> nodeToParent;
+        TreeNode* target = NULL;
+        doMapping(nodeToParent, root, NULL, start, target);
+        
+        int min = 0;
+
+        infection(target, nodeToParent, min);
+       
+        return min;
+    }
+};
