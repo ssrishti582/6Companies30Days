@@ -1,0 +1,76 @@
+//question 43
+class Solution {
+public:
+    string frequencySort(string s) {
+        unordered_map<char,int> freq;
+        vector<string> bucket(s.size()+1, "");
+        string res;
+        
+        //count frequency of each character
+        for(char c:s) freq[c]++;
+        //put character into frequency bucket
+        for(auto& it:freq) {
+            int n = it.second;
+            char c = it.first;
+            bucket[n].append(n, c);
+        }
+        //form descending sorted string
+        for(int i=s.size(); i>0; i--) {
+            if(!bucket[i].empty())
+                res.append(bucket[i]);
+        }
+        return res;
+    }
+};
+//question 44
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> wordSet(wordDict.begin(), wordDict.end());
+        vector<int> memo(s.size(), -1);
+        return check(s, wordSet, 0, memo);
+    }
+    bool check(string s, unordered_set<string>& wordSet, int start, vector<int>& memo) {
+        if (start >= s.size()) 
+            return true;
+        if (memo[start] != -1) 
+            return memo[start];
+        for (int i = start + 1; i <= s.size(); ++i) {
+            if (wordSet.count(s.substr(start, i - start)) && check(s, wordSet, i, memo)) {
+                memo[start] = 1;
+                return memo[start];
+            }
+        }
+        memo[start] = 0;
+        return memo[start];
+    }
+};
+//question 45
+class Solution {
+public:
+    int minExtraChar(const string &s, vector<string>& dict) {
+        memset(dp, -1, sizeof(dp)); // Initialize dp array with -1
+        
+        return minExtraCharHelper(s, dict, 0);
+    }
+    
+private:
+    int dp[51]; // Initialize dp array to store memoization values
+
+    int minExtraCharHelper(const string &s, vector<string>& dict, int i) {
+        if (i == s.size())
+            return 0;
+
+        if (dp[i] == -1) {
+            dp[i] = 1 + minExtraCharHelper(s, dict, i + 1); // Initialize with one extra character.
+
+            for (const auto &w : dict) {
+                if (s.compare(i, w.size(), w) == 0) {
+                    dp[i] = min(dp[i], minExtraCharHelper(s, dict, i + w.size())); // Update if a word in the dictionary is found.
+                }
+            }
+        }
+
+        return dp[i]; // Return the minimum extra characters starting from position i.
+    }
+};
