@@ -1,0 +1,75 @@
+//question 49
+class Solution {
+public:
+    int constrainedSubsetSum(vector<int>& nums, int k) {
+        int maxSum = nums[0];
+        deque<int> maxSumQueue;
+
+        for (int i = 0; i < nums.size(); i++) {
+            nums[i] += !maxSumQueue.empty() ? maxSumQueue.front() : 0;
+            maxSum = max(maxSum, nums[i]);
+
+            while (!maxSumQueue.empty() && nums[i] > maxSumQueue.back()) {
+                maxSumQueue.pop_back();
+            }
+
+            if (nums[i] > 0) {
+                maxSumQueue.push_back(nums[i]);
+            }
+
+            if (i >= k && !maxSumQueue.empty() && maxSumQueue.front() == nums[i - k]) {
+                maxSumQueue.pop_front();
+            }
+        }
+
+        return maxSum;
+    }
+};
+//question 50
+class Solution {
+public:
+    vector<vector<int>> dp;
+
+    int solve(vector<int>& nums, int prevIndex, int currentIndex, int mask) {
+        if (currentIndex == nums.size()) {
+            return 1;
+        }
+        if (dp[prevIndex + 1][mask] != -1) {
+            return dp[prevIndex + 1][mask];
+        }
+        int tot = 0;
+        for (int j = 0; j < nums.size(); j++) {
+            if (mask & (1 << j)) {
+                continue;
+            }
+            if (prevIndex == -1 || nums[prevIndex] % nums[j] == 0 || nums[j] % nums[prevIndex] == 0) {
+                tot += solve(nums, j, currentIndex + 1, mask | (1 << j));
+                tot %= 1000000007;
+            }
+        }
+        dp[prevIndex + 1][mask] = tot;
+        return dp[prevIndex + 1][mask];
+    }
+
+    int specialPerm(vector<int>& nums) {
+        dp.resize(20,vector<int>((1 << 14) + 5, -1));
+        return solve(nums, -1, 0, 0);
+    }
+};
+//question 51
+class Solution {
+public:
+    vector<vector<int>> allCellsDistOrder(int rows, int cols, int r, int c) {
+        vector<vector<int>> ans;
+        for (int i=0; i<rows; i++) {
+            for (int j=0; j<cols; j++)
+                ans.push_back({i, j});
+        }
+
+        sort (ans.begin(), ans.end(), [&] (auto& a, auto& b) {
+            return (abs(r-a[0]) + abs(c-a[1]) < abs(r-b[0]) + abs(c-b[1]));
+        });
+
+        return ans;
+    }
+};
