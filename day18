@@ -1,0 +1,109 @@
+//question 52
+class Solution {
+public:
+    vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {
+        int edge_idx = 0;
+        vector<pair<int, int>> edges;
+        priority_queue<pair<int, int>> pq;
+        vector<vector<int>> skyline;
+
+        for (int i = 0; i < buildings.size(); ++i) {
+            const auto &b = buildings[i];
+            edges.emplace_back(b[0], i);
+            edges.emplace_back(b[1], i);
+        }
+
+        std::sort(edges.begin(), edges.end());
+
+        while (edge_idx < edges.size()) {
+            int curr_height;
+            const auto &[curr_x, _] = edges[edge_idx];
+            while (edge_idx < edges.size() &&
+                    curr_x == edges[edge_idx].first) {
+                const auto &[_, building_idx] = edges[edge_idx];
+                const auto &b = buildings[building_idx];
+                if (b[0] == curr_x)
+                    pq.emplace(b[2], b[1]);
+                ++edge_idx;
+            }
+            while (!pq.empty() && pq.top().second <= curr_x)
+                pq.pop();
+            curr_height = pq.empty() ? 0 : pq.top().first;
+            if (skyline.empty() || skyline.back()[1] != curr_height)
+                skyline.push_back({curr_x, curr_height});
+        }
+        return skyline;
+    }
+};
+//question 53
+// Define a min-heap priority queue to store pairs of distance and index
+template<class T> using min_pq = priority_queue<T, vector<T>, greater<T>>;
+
+class Solution {
+public:
+    
+    int minimumCost(vector<int>& start, vector<int>& target, vector<vector<int>>& specialRoads) {
+        
+        const int INF = 1e9+10;
+        int n = specialRoads.size();
+
+        // Initialize the distance of each special road to infinity
+        vector<int> d(n, INF);
+
+        // Create a priority queue and push the distance from start to each special road
+        min_pq<pair<int, int>> pq;
+        for (int i = 0; i < n; i++) {
+            d[i] = abs(start[0] - specialRoads[i][0]) + abs(start[1] - specialRoads[i][1]) + specialRoads[i][4];
+            pq.push({d[i], i});
+        }
+        
+        // Initialize the answer with the manhattan distance between start and target
+        int ans = abs(start[0] - target[0]) + abs(start[1] - target[1]);
+
+        // Continue to search for the shortest path until the priority queue is empty
+        while (pq.size()) {
+            // Pop the pair with smallest distance
+            auto [d_c, c] = pq.top(); pq.pop();
+
+            // If the distance stored in d is not equal to the current distance d_c, skip this node
+            if (d_c != d[c]) continue;
+
+            // Update the answer by finding the distance from the current special road to the target
+            ans = min(ans, d_c + abs(target[0] - specialRoads[c][2]) + abs(target[1] - specialRoads[c][3]));
+
+            // For each special road that can be reached from the current special road, update its distance
+            for (int nxt = 0; nxt < n; nxt++) {
+                int w = abs(specialRoads[c][2] - specialRoads[nxt][0]) + abs(specialRoads[c][3] - specialRoads[nxt][1]) + specialRoads[nxt][4];
+                if (d_c + w < d[nxt]) {
+                    d[nxt] = d_c + w;
+                    pq.push({d[nxt], nxt});
+                }
+            }
+        }
+
+        // Return the minimum cost of reaching the target
+        return ans;
+    }
+};
+//question 54
+class Solution {
+public:
+    string findLongestWord(string s, vector<string>& d) {
+        // sorting d
+        sort(begin(d), end(d), [](string a, string b){return a.size() == b.size() && a < b || b.size() < a.size();});
+        // checking each word by priority
+        for (int i = 0, lmt = d.size(), j, currLen; i < lmt; i++) {
+            // preparing to parse with d[i]
+            j = 0, currLen = d[i].size();
+            for (char c: s) {
+                // advancing j for each match
+                if (c == d[i][j]) {
+                    j++;
+                    // checking if the match is full
+                    if (j == currLen) return d[i];
+                }
+            }
+        }
+        return "";
+    }
+};
