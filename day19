@@ -1,0 +1,86 @@
+//question 55
+class Solution {
+public:
+    vector<vector<int>> findWinners(vector<vector<int>>& matches) {
+        unordered_map<int,int>lost_map;
+        for(int i=0;i<matches.size();i++)
+        {
+            int lose=matches[i][1];
+        lost_map[lose]++;
+        }
+        vector<int>notLost;
+        vector<int>onceLost;
+        for(int i=0;i<matches.size();i++)
+        {
+           int winner=matches[i][0];
+           int looser=matches[i][1];
+           if(lost_map.find(winner)==lost_map.end()) 
+           {
+               notLost.push_back(winner);
+               lost_map[winner]=2;
+
+           }
+           if(lost_map[looser]==1)
+           onceLost.push_back(looser);
+
+        }
+        sort(notLost.begin(),notLost.end());    
+        sort(onceLost.begin(),onceLost.end());
+
+        return {notLost,onceLost};
+}
+};
+//question 56
+
+class Solution {
+public:
+    int maxNumberOfFamilies(int n, vector<vector<int>>& reserved) {
+        int ans = 0;
+        unordered_map<int,vector<int>> mp;
+        for(auto r: reserved){
+            mp[r[0]].push_back(r[1]);
+        }
+        
+        ans = (n-mp.size())*2 ;  //n-mp.size() --> rows with no reserved seats 
+                                 //Each row can have maximum 2 groups 
+        
+        //2 groups can be formed only when we split it as [2,5] and [6,9] 
+    
+        for(auto r : mp){
+            bool flag = 0;
+            vector<bool> contains(11 , 0);
+            for(int x : r.second) {
+                contains[x] = 1;
+            }
+            //2 , 3 , 4 , 5 
+            if(!contains[2] && !contains[3] && !contains[4] && !contains[5])  {
+                ans++;
+                flag = 1;
+            }
+            //6 , 7 , 8 , 9
+            if(!contains[6] && !contains[7] && !contains[8] && !contains[9]) {
+                ans++;
+                flag = 1;
+            }
+            //4 , 5 , 6 , 7
+            if(!flag) {
+                if(!contains[4] && !contains[5] && !contains[6] && !contains[7])   
+                    ans++;
+            }            
+        }
+        
+        return ans; 
+    }
+};
+//question 57
+class Solution {
+public:
+    double nthPersonGetsNthSeat(int n) {
+        vector<double> dp(n);
+        dp[0] = 1.0;
+        for (int i=1; i<dp.size(); i++) {
+            dp[i] = 1.0/(i+1) + ((i+1-2.0)/(i+1))*dp[i-1];
+        }
+        return dp.back();
+    }
+};
