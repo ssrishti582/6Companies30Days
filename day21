@@ -1,0 +1,72 @@
+//question 61
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        sort(g.begin(), g.end()); // sort the children's greed factors in non-decreasing order
+        sort(s.begin(), s.end()); // sort the cookie sizes in non-decreasing order
+        int contentChildren = 0;
+        int i = 0; // pointer to the current child's greed factor
+        int j = 0; // pointer to the current cookie size
+        while (i < g.size() && j < s.size()) {
+            if (s[j] >= g[i]) { // if the current cookie can satisfy the current child's greed factor
+                contentChildren++;
+                i++;
+            }
+            j++;
+        }
+        return contentChildren;
+    }
+};
+//qustion 62
+class ThroneInheritance {
+public:
+    unordered_map<string, vector<string>> map;
+    unordered_set<string> dead;
+    string nameOfKing;
+    
+    ThroneInheritance(string kingName) {
+        nameOfKing= kingName;
+    }
+    
+    void birth(string par, string child) {
+        map[par].push_back(child);
+    }
+    
+    void death(string name) {
+        dead.insert(name);
+    }
+    
+    
+    void helper(string par, vector<string> &ans){
+        if(dead.count(par)==0) ans.push_back(par);
+        for(auto child:map[par]) helper(child, ans);
+    }
+    
+    vector<string> getInheritanceOrder() {
+        vector<string> ans;
+        helper(nameOfKing, ans);
+        return ans;
+    }
+};
+//question 63
+   class KthLargest {
+        final PriorityQueue<Integer> q;
+        final int k;
+
+        public KthLargest(int k, int[] a) {
+            this.k = k;
+            q = new PriorityQueue<>(k);
+            for (int n : a)
+                add(n);
+        }
+
+        public int add(int n) {
+            if (q.size() < k)
+                q.offer(n);
+            else if (q.peek() < n) {
+                q.poll();
+                q.offer(n);
+            }
+            return q.peek();
+        }
+    }
