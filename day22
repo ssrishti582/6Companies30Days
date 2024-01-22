@@ -1,3 +1,95 @@
 //question 64
+class Solution {
+public:
+    int maximizeSquareHoleArea(int n, int m, vector<int>& hBars, vector<int>& vBars) {
+        vector<int>h;
+        vector<int>v;
+        sort(hBars.begin(),hBars.end());
+        sort(vBars.begin(),vBars.end());
+        for(auto i:hBars)
+            h.push_back(i);
+        for(auto i:vBars)
+            v.push_back(i);
+        int mv=1,mh=1;
+        int c=1;
+        for(int i=1;i<h.size();i++)
+        {   
+            
+            if(h[i]==h[i-1]+1)
+                c++;
+            else
+                c=1;
+            mh=max(mh,c);
+        }
+        c=1;
+        for(int i=1;i<v.size();i++)
+        {   
+            if(v[i]==v[i-1]+1)
+                c++;
+            else
+                c=1;
+            mv=max(mv,c);
+        }
+        int x=min(mh+1,mv+1);
+        return x*x;
+    }
+};
 //question 65
+class LRUCache
+{
+    public:
+        list<pair<int,int>> l;
+        unordered_map<int,list<pair<int, int>>::iterator> m;
+        int size;
+        LRUCache(int capacity)
+        {
+            size=capacity;
+        }
+        int get(int key)
+        {
+            if(m.find(key)==m.end())
+                return -1;
+            l.splice(l.begin(),l,m[key]);
+            return m[key]->second;
+        }
+        void put(int key, int value)
+        {
+            if(m.find(key)!=m.end())
+            {
+                l.splice(l.begin(),l,m[key]);
+                m[key]->second=value;
+                return;
+            }
+            if(l.size()==size)
+            {
+                auto d_key=l.back().first;
+                l.pop_back();
+                m.erase(d_key);
+            }
+            l.push_front({key,value});
+            m[key]=l.begin();
+        }
+};
 //question 66
+class Solution {
+public:
+    // time/space: O(nm + nlogn)/O(n)
+    vector<int> beautifulIndices(string s, string a, string b, int k) {
+        // find the indices in the string `s` that contain string `a`/`b`
+        vector<int> matchA, matchB;
+        for (int i = 0; (i + a.size()) <= s.size(); i++) {
+            if (s.substr(i, a.size()) == a) matchA.push_back(i);
+        }
+        for (int i = 0; (i + b.size()) <= s.size(); i++) {
+            if (s.substr(i, b.size()) == b) matchB.push_back(i);
+        }
+        
+        // find the index [i, j] meets the conditions using binary search
+        vector<int> result;
+        for (auto& i : matchA) {
+            auto it = lower_bound(matchB.begin(), matchB.end(), i - k);
+            if ((it != matchB.end()) && (abs(*it - i) <= k)) result.push_back(i);
+        }
+        return result;
+    }
+};
