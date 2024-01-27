@@ -1,0 +1,105 @@
+//question 79
+class Solution {
+public:
+    vector<string> findRepeatedDnaSequences(string s) {
+        unordered_map<string, int> counter;
+        vector<string> res;
+        
+        if (s.size() < 10) return res;
+        
+        for (int i=0; i<s.size()-9; i++)
+            counter[s.substr(i, 10)]++;
+        
+        for (auto a:counter)
+            if (a.second > 1)
+                res.push_back(a.first);
+        
+        return res;
+    }
+};
+//question 80
+class Solution {
+public:
+        int stoneGameVI(vector<int>& A, vector<int>& B) {
+        vector<vector<int>> C;
+        int res[2] = {0, 0}, n = A.size();
+        for (int i = 0; i < n; ++i)
+            C.push_back({ -A[i] - B[i], A[i], B[i]});
+        sort(begin(C), end(C));
+        for (int i = 0; i < n; ++i)
+            res[i % 2] += C[i][1 + i % 2];
+        return res[0] == res[1] ? 0 : res[0] > res[1] ? 1 : -1;
+    }
+};
+//question 81
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+private:
+    ListNode* merge(vector<ListNode*>& lists, int start, int end) {
+        if (start == end) {
+            return lists[start];
+        }
+
+        int mid = (start + end) / 2;
+        ListNode* one = merge(lists, start, mid);
+        ListNode* two = merge(lists, mid + 1, end);
+        ListNode* head;
+        ListNode* cur;
+
+        if (one && two) {
+            if (one->val < two->val) {
+                cur = one;
+                head = one;
+                one = one->next;
+            } else {
+                cur = two;
+                head = two;
+                two = two->next;
+            }
+        } else if (one) {
+            cur = one;
+            head = one;
+            one = one->next;
+        } else if (two) {
+            cur = two;
+            head = two;
+            two = two->next;
+        }
+
+        while (one && two) {
+            if (one->val < two->val) {
+                cur->next = one;
+                cur = cur->next;
+                one = one->next;
+            } else {
+                cur->next = two;
+                cur = cur->next;
+                two = two->next;
+            }
+        }
+        
+        if (one) {
+            cur->next = one;
+        } else if (two) {
+            cur->next = two;
+        }
+
+        return head;
+    }
+
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.size() == 0) return nullptr;
+
+        return merge(lists, 0, lists.size() - 1);
+    }
+};
