@@ -1,0 +1,138 @@
+//question 88
+class Solution {
+public:
+    int findInMountainArray(int target, MountainArray &mountainArr) {
+        int length = mountainArr.length();
+
+        // Find the index of the peak element in the mountain array.
+        int peakIndex = findPeakIndex(1, length - 2, mountainArr);
+
+        // Binary search for the target in the increasing part of the mountain array.
+        int increasingIndex = binarySearch(0, peakIndex, target, mountainArr, false);
+        if (mountainArr.get(increasingIndex) == target) 
+            return increasingIndex; // Target found in the increasing part.
+
+        // Binary search for the target in the decreasing part of the mountain array.
+        int decreasingIndex = binarySearch(peakIndex + 1, length - 1, target, mountainArr, true);
+        if (mountainArr.get(decreasingIndex) == target) 
+            return decreasingIndex; // Target found in the decreasing part.
+
+        return -1;  // Target not found in the mountain array.
+    }
+
+    int findPeakIndex(int low, int high, MountainArray &mountainArr) {
+        while (low != high) {
+            int mid = low + (high - low) / 2;
+            if (mountainArr.get(mid) < mountainArr.get(mid + 1)) {
+                low = mid + 1; // Move to the right side (increasing slope).
+            } else {
+                high = mid; // Move to the left side (decreasing slope).
+            }
+        }
+        return low; // Return the index of the peak element.
+    }
+
+    int binarySearch(int low, int high, int target, MountainArray &mountainArr, bool reversed) {
+        while (low != high) {
+            int mid = low + (high - low) / 2;
+            if (reversed) {
+                if (mountainArr.get(mid) > target)
+                    low = mid + 1; // Move to the right side for a decreasing slope.
+                else
+                    high = mid; // Move to the left side for an increasing slope.
+            } else {
+                if (mountainArr.get(mid) < target)
+                    low = mid + 1; // Move to the right side for an increasing slope.
+                else
+                    high = mid; // Move to the left side for a decreasing slope.
+            }
+        }
+        return low; // Return the index where the target should be or would be inserted.
+    }
+};
+//question 89
+class TrieNode {
+public:
+    bool word;
+    TrieNode* children[26];
+    TrieNode() {
+        word = false;
+        memset(children, NULL, sizeof(children));
+    }
+};
+
+class WordDictionary {
+public:
+    /** Initialize your data structure here. */
+    WordDictionary() {
+        
+    }
+    
+    /** Adds a word into the data structure. */
+    void addWord(string word) {
+        TrieNode* node = root;
+        for (char c : word) {
+            if (!node -> children[c - 'a']) {
+                node -> children[c - 'a'] = new TrieNode();
+            }
+            node = node -> children[c - 'a'];
+        }
+        node -> word = true;
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    bool search(string word) {
+        return search(word.c_str(), root);
+    }
+private:
+    TrieNode* root = new TrieNode();
+    
+    bool search(const char* word, TrieNode* node) {
+        for (int i = 0; word[i] && node; i++) {
+            if (word[i] != '.') {
+                node = node -> children[word[i] - 'a'];
+            } else {
+                TrieNode* tmp = node;
+                for (int j = 0; j < 26; j++) {
+                    node = tmp -> children[j];
+                    if (search(word + i + 1, node)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return node && node -> word;
+    }
+};
+//question 90
+class Solution {
+public:
+    int countPairs(TreeNode* root, int distance) {
+        int res = 0;
+        dfs(root, distance, res);
+        return res;
+    }
+    
+    vector<int> dfs(TreeNode* root, int distance, int& res) {
+        if (!root->left && !root->right) return {1};
+        vector<int> left, right;
+        if (root->left) left = dfs(root->left, distance, res);
+        if (root->right) right = dfs(root->right, distance, res);
+        for (int i = 0; i < left.size(); ++i) {
+            for (int j = 0; j < right.size(); ++j) {
+                if (left[i] + right[j] <= distance) ++res;
+            }
+        }
+        vector<int> res_vec;
+        for (int i = 0; i < left.size(); ++i) {
+            if (left[i] + 1 < distance) res_vec.push_back(left[i] + 1);
+        }
+        for (int i = 0; i < right.size(); ++i) {
+            if (right[i] + 1 < distance) res_vec.push_back(right[i] + 1);
+        }
+        return res_vec;
+    }
+};
+
+
+                                                                      THANKYOU
